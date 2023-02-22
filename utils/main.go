@@ -1,4 +1,4 @@
-package main
+package util
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
-func main() {
+func Mainfunc() {
 	// load the env variables
 	err := godotenv.Load(".env")
 	Wallpaper.HandleErr(err)

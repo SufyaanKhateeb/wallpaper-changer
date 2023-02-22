@@ -1,2 +1,3 @@
-.env
 build
+.gitignore
+wallpaper_app

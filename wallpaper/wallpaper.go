@@ -30,13 +30,13 @@ type Links struct {
 
 func HandleErr(e error) {
 	if e != nil {
-		log.Fatal(e)
+		log.Panic(e)
 	}
 }
 
 func CreateFolder() {
 	// making the directory to store the wallpapers, if not already exists
-	if err := os.Mkdir("/home/sufyaan/wallpaper_app_images", os.ModePerm); err != nil {
+	if err := os.Mkdir(os.Getenv("WALLPAPER_STORAGE_DESTINATION"), os.ModePerm); err != nil {
 		if !os.IsExist(err) {
 			log.Fatal(err)
 		}
@@ -56,8 +56,8 @@ func FetchWallpaperIntoFolder() {
 	defer res.Body.Close()
 
 	// fname := wallpaper.Id
-	fname := "current"
-	f, err := os.Create("/home/sufyaan/wallpaper_app_images/" + fname)
+	fname := "/current"
+	f, err := os.Create(os.Getenv("WALLPAPER_STORAGE_DESTINATION") + fname)
 	HandleErr(err)
 
 	defer f.Close()
@@ -69,11 +69,11 @@ func getWallpaperObj() (Wallpaper, error) {
 	client := &http.Client{
 		Timeout: time.Second * 10,
 	}
-	req, err := http.NewRequest("GET", "https://api.unsplash.com/photos/random?orientation=landscape&topics=bo8jQKTaE0Y,CDwuwXJAbEw", nil)
+	req, err := http.NewRequest("GET", os.Getenv("UNSPLASH_WALLPAPER_API_URL"), nil)
 	if err != nil {
 		return Wallpaper{}, err
 	}
-	authKey := "Client-ID " + os.Getenv("ACCESS_KEY")
+	authKey := "Client-ID " + os.Getenv("UNSPLASH_API_ACCESS_KEY")
 	req.Header.Set("Authorization", authKey)
 	res, err := client.Do(req)
 	if err != nil {
@@ -93,7 +93,7 @@ func getWallpaperObj() (Wallpaper, error) {
 
 func SetWallpaper() error {
 	var out bytes.Buffer
-	var file string = "/home/sufyaan/wallpaper_app_images/current"
+	var file string = os.Getenv("WALLPAPER_STORAGE_DESTINATION") + "/current"
 	cmd := exec.Command("gsettings", "get", "org.gnome.desktop.interface", "color-scheme")
 	cmd.Stdout = &out
 	err := cmd.Run()
